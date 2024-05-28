@@ -1,0 +1,104 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Chat Application</title>
+</head>
+<style>
+    body {
+        margin: 0;
+        padding-bottom: 3rem;
+    }
+
+    #form {
+        background-color: rgba(139, 51, 51, 0.15);
+        padding: 0.25rem;
+        position: fixed;
+        bottom: 0;
+        left: 0;
+        right: 0;
+        display: flex;
+        height: 70px;
+        box-sizing: border-box;
+        backdrop-filter: blur(20px);
+    }
+
+    #input {
+        border: none;
+        padding: 20px;
+        flex-grow: 1;
+        border-radius: 2rem;
+        margin: 0.25rem;
+    }
+
+    #input:focus {
+        outline: none;
+    }
+
+    #form button {
+        background-color: #333;
+        border: none;
+        padding: 20px;
+        margin: 0.25rem;
+        border-radius: 2rem;
+        outline: none;
+        color: white;
+    }
+
+    #message {
+        list-style-type: none;
+        margin: 0;
+        padding: 0;
+    }
+
+    #message li {
+        padding: 0.5rem 1rem;
+    }
+
+    #message>li:nth-child(odd) {
+        background-color: #efefef;
+    }
+</style>
+
+<body>
+    <ul id="message"></ul>
+    <form action="" id="form">
+        <input type="text" id="input" autocomplete="off" placeholder="Type Your Message Here..."><button>Send</button>
+    </form>
+</body>
+<script src="https://cdn.socket.io/4.7.5/socket.io.min.js"></script>
+
+<script>
+    const socket = io();
+
+    const form = document.getElementById('form');
+    const input = document.getElementById('input');
+    const message = document.getElementById('message');
+
+    form.addEventListener('submit', (event) => {
+        event.preventDefault(); 
+        if (input.value) {
+            socket.emit('chat message', input.value);
+            input.value = ''; 
+        }
+    });
+
+    socket.on('chat message', (msg) => {
+        const item = document.createElement('li');
+        item.textContent = msg;
+        message.appendChild(item);
+        window.scrollTo(0, document.body.scrollHeight);
+    });
+
+    socket.on('connect', () => {
+        console.log('connected to server');
+    });
+
+    socket.on('disconnect', () => {
+        console.log('disconnected from server');
+    });
+</script>
+
+</html>
